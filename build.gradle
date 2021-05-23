@@ -1,0 +1,105 @@
+buildscript {
+    ext {
+        kotlinVersion = '1.4.31'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
+        classpath("org.jetbrains.kotlin:kotlin-allopen:${kotlinVersion}")
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+apply plugin: 'idea'
+
+group = pluginGroup
+version = pluginVersion
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven { url = "http://maven.elmakers.com/repository/" }
+    maven { url = ("https://jitpack.io") }
+}
+
+repositories {
+    maven {
+        url 'https://papermc.io/repo/repository/maven-public/'
+    }
+}
+
+configurations {
+    // configuration that holds jars to include in the jar
+    compile.extendsFrom jarLibs
+}
+
+dependencies {
+
+    compileOnly 'io.github.waterfallmc:waterfall-api:1.16-R0.4-SNAPSHOT'
+
+    compileOnly 'net.luckperms:api:5.2'
+
+
+    jarLibs "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.1"
+
+    testCompileOnly "org.jetbrains.kotlin:kotlin-test"
+    testCompileOnly "org.jetbrains.kotlin:kotlin-test-junit5"
+    testCompileOnly "org.mockito:mockito-all:2.0.2-beta"
+    testCompileOnly "org.junit.jupiter:junit-jupiter-api:5.3.1"
+
+
+}
+
+jar {
+    from {
+        configurations.jarLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+wrapper {
+    gradleVersion = '5.2'
+}
+
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+        suppressWarnings = true
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        freeCompilerArgs = ['-Xjsr305=strict']
+        jvmTarget = '1.8'
+        suppressWarnings = true
+    }
+}
+
+import org.apache.tools.ant.filters.ReplaceTokens
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        filter ReplaceTokens, tokens: [version: version]
+    }
+}

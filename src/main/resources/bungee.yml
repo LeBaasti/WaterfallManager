@@ -1,0 +1,5 @@
+name: WaterfallManager
+author: LeBaasti
+version: @version@
+main: de.lebaasti.waterfallmanager.WaterfallManager
+description: Waterfall Manager for einfachmc
